@@ -1,0 +1,12 @@
+[
+    {
+        "model": "gpt-3.5-turbo",
+        "api_key": "sk-cmj9jtBJQCH5So723796Be44AdE14aCaB80f43Eb83018485",
+        "api_base": "https://d1.xiamoai.top/v1"
+    },
+    {
+        "model": "gpt-4-1106-preview",
+        "api_key": "sk-kBnU0houGUU2HeMwAa74C013Fc3249D2A69b6240D90dF8D9",
+        "api_base": "https://model.aigcbest.top/v1"
+    }
+]
