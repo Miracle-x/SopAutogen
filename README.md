@@ -20,7 +20,8 @@
 
 # 体验
 
-运行 getOrder.py文件
+- 运行 getOrder.py文件
+- 查看history目录下的文件
 
 
 # 用到的agent类
