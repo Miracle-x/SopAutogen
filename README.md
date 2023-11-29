@@ -10,12 +10,11 @@
 
 
  开始对话
- 1. ChatManager获取除User外所有agent能力
- 2. ChatManager向用户介绍自己融合其他agents后的能力，询问需求
- 3. User告诉ChatManager自己的input
- 4. 检查是否target拥有且满足，是则结束，否则进入5.
- 5. ChatManager决定处于哪个state
- 6. ChatManager根据target、task、input、history（可选）决定跟User或哪个agent对话，直至轮到User发言，进入3.
+1. ChatManager询问需求 
+2. User告诉ChatManager自己的input 
+3. 检查是否target拥有且满足，是则结束，否则进入4. 
+4. ChatManager决定处于哪个state 
+5. ChatManager根据target、task、input、history（可选）决定跟User或哪个agent对话，直至轮到User发言，进入2.
 
 
 # 体验
@@ -39,4 +38,4 @@
 
 **CoorRetrieveGoodsAgent：**
 
-![img.png](img.png)
+![img.png](doc/img.png)

@@ -6,6 +6,7 @@ from autogen.agentchat.contrib.retrieve_assistant_agent import RetrieveAssistant
 from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
 from autogen.agentchat.contrib.text_analyzer_agent import TextAnalyzerAgent
 
+
 class CoorRetrieveGoodsAgent(AssistantAgent):
     def __init__(
             self,
@@ -35,6 +36,17 @@ class CoorRetrieveGoodsAgent(AssistantAgent):
             config = self
         if messages is None:
             messages = self._oai_messages[sender]
+        # prompt = messages + [{
+        #     "role": "system",
+        #     "content": "Analyze what product the user wants in the TEXT. Only return the shortest keyword name of the product. ",
+        # }]
+        # final, good_name = self.generate_oai_reply(prompt)
+        # prompt = messages + [{
+        #     "role": "system",
+        #     "content": f"You can't consider Salesperson needs or generate need out of thin air. Only consider User needs for the {good_name}, the needs like 'besides...' are important. Then ask assistant to return recommended products, which including all user needs, in one question in TEXT's language. Only return that question as short as possible. ",
+        # }]
+        # final, question = self.generate_oai_reply(prompt)
+        print(messages)
         conversation = [message.get("name", "") + ':' + message.get("content", "") + '\n' for message in messages]
         conversation = '\n'.join(conversation)
         print(conversation)
@@ -42,7 +54,7 @@ class CoorRetrieveGoodsAgent(AssistantAgent):
             good_name = self.analyzer.analyze_text(conversation,
                                                    "Analyze what product the user wants in the TEXT. Only return the shortest keyword name of the product. ")
         question = self.analyzer.analyze_text(conversation,
-                                              f"Only consider User needs for the {good_name}, the needs like 'besides...' are important , then ask assistant to return recommended products, which including all user needs, in one question in TEXT's language. Only return that question. ")
+                                              f"You can't consider Salesperson needs or generate need out of thin air. Only consider User needs for the {good_name}, the needs like 'besides...' are important. Then ask assistant to return recommended products, which including all user needs, in one question in TEXT's language. Only return that question as short as possible. ")
         print(good_name)
         print(question)
         ragproxyagent = RetrieveUserProxyAgent(
@@ -50,7 +62,7 @@ class CoorRetrieveGoodsAgent(AssistantAgent):
             human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             retrieve_config={
-                "customized_prompt": """You're a retrieve augmented chatbot. You answer user's questions based on your own knowledge and the
+                "customized_prompt": """You're a retrieve augmented chatbot. You answer user's questions based on the
 context provided by the user.
 If you can't answer the question with or without the current context , you should reply exactly `UPDATE CONTEXT`.
 You must give as complete an answer as possible.

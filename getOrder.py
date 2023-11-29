@@ -12,7 +12,7 @@ config_list = autogen.config_list_from_json(
 )
 llm_config = {"config_list": config_list, "seed": 42}
 
-target = "Encourage users to place orders"
+target = "下单成功或者用户已经阐述了为何不选择自己。"
 states = {
     "初步介绍": {
         "start_condition": """买家首次咨询且没有明确提问时。""",
@@ -35,8 +35,15 @@ states = {
             "Salesperson": "需要确认采购信息：产品、工艺、材质、尺寸、颜色、数量、RMB/USD、外贸术语等，如果客户没有详细的产品数量，可按照不同数量给出阶梯报价；"},
         "examples": [],
     },
+    "完成订单": {
+        "start_condition": """需求和价格的商讨已经达成一致。""",
+        "participate_agent_names": ["User", "Warehouse", "Salesperson"],
+        "sys_msg": {
+            "Salesperson": "仅回复：下单成功；"},
+        "examples": [],
+    },
     "反思": {
-        "start_condition": """用户表示不再选择对方作为供应商""",
+        "start_condition": """用户表示不再选择对方作为供应商。""",
         "participate_agent_names": ["User", "Salesperson"],
         "sys_msg": {"Salesperson": "复盘沟通过程，反思输单原因，必要时询问用户为什么不选择自己；"},
         "examples": [],
@@ -44,18 +51,18 @@ states = {
 }
 user = autogen.UserProxyAgent(
     name="User",
-    system_message="According to the Salesperson's messages, put forward their own needs, problems or purchase intention, and communicate with Salesperson. ",
     code_execution_config=False,
     human_input_mode="ALWAYS"
 )
 salesperson = TeachableAgent(
     name="Salesperson",
-    system_message=f"You are a helpful AI salesperson that remembers useful info from prior chats. You can only talk about goods from the Warehouse. If User proposed to buy something but Warehouse did't mation that thing, you can't be the next role, you should be the role behind the Warehouse. ",
+    system_message=f"You are a helpful AI salesperson that remembers useful info from prior chats. You can only sell goods from the Warehouse. If User proposed to buy something but Warehouse did't mation that thing, you can't be the next role, you should be the role behind the Warehouse. ",
     llm_config=llm_config,
     teach_config={
-        "verbosity": 0,  # 0 for basic info, 1 to add memory operations, 2 for analyzer messages, 3 for memo lists.
+        "verbosity": 3,  # 0 for basic info, 1 to add memory operations, 2 for analyzer messages, 3 for memo lists.
         "reset_db": True,  # Set to True to start over with an empty database.
-        "path_to_db_dir": "./tmp/notebook/teachable_agent_db", # Path to the directory where the database will be stored.
+        "path_to_db_dir": "./tmp/notebook/teachable_agent_db",
+        # Path to the directory where the database will be stored.
         "recall_threshold": 1.5,  # Higher numbers allow more (but less relevant) memos to be recalled.
     }
 )

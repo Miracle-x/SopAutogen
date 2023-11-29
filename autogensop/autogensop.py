@@ -1,4 +1,5 @@
 import autogen
+from autogen.agentchat.contrib.text_analyzer_agent import TextAnalyzerAgent
 
 from autogensop.chatmamager import GroupChat, GroupChatManager
 
@@ -31,6 +32,7 @@ class AutogenSop(autogen.ConversableAgent):
             states,
             agents,
             llm_config,
+            max_user_input = 100,
             **kwargs,
     ) -> None:
         super().__init__(
@@ -44,6 +46,7 @@ class AutogenSop(autogen.ConversableAgent):
         self.states = states
         self.agents = agents
         self.llm_config = llm_config
+        self.max_user_input = max_user_input
         self.groupchat = autogen.GroupChat(agents, messages=[])
         self.messages = []
 
@@ -54,8 +57,22 @@ class AutogenSop(autogen.ConversableAgent):
         return "\n".join([f"{key}: {item['task']}" for key, item in self.states.items()])
 
     def judge_target_reached(self):
-        # TODO：完成结束判断函数
-        return False
+        # 判断self.target是否满足
+        rule = f"""Your judgment condition is {self.target} If the judgment condition is reached, only return: EXIT, else only return: CONTINUE. """
+        prompt = self.messages + [{
+            "role": "system",
+            "content": rule,
+        }]
+        final, res = self.generate_oai_reply(prompt)
+        print('***************target_reached:' + res)
+        if final:
+            if 'EXIT' in res:
+                return True
+            else:
+                return False
+        else:
+            print('judge_target_reached 错误')
+            exit()
 
     def select_state(self):
         # 判断进入的state
@@ -82,9 +99,10 @@ class AutogenSop(autogen.ConversableAgent):
         last_msg = self.last_message()
         last_msg['name'] = user_name
         self.messages.append(last_msg)
+        self.max_user_input -= 1
 
         manager = GroupChatManager(self.groupchat, user_name=user_name, llm_config=self.llm_config)
-        while not self.judge_target_reached():
+        while not self.judge_target_reached() and self.max_user_input > 0:
             # 获取最后一条发言者
             last_speaker = self.groupchat.agent_by_name(self.messages[-1]['name'])
             last_message = self.messages[-1]['content']
@@ -114,3 +132,5 @@ class AutogenSop(autogen.ConversableAgent):
             elif len(self.messages) > 1:
                 manager.generate_reply(messages=manager.chat_messages[last_speaker], sender=last_speaker)
             self.messages = groupchat.messages
+
+            self.max_user_input -= 1
