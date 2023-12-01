@@ -28,13 +28,6 @@ states = {
             "Salesperson": "了解客户对产品的要求和应用方式，判断客户所需产品是否为询价产品，按照客户需求和市场推荐合适产品；"},
         "examples": [],
     },
-    "报价": {
-        "start_condition": """用户询问价格、商讨价格。""",
-        "participate_agent_names": ["User", "Warehouse", "Salesperson"],
-        "sys_msg": {
-            "Salesperson": "需要确认采购信息：产品、工艺、材质、尺寸、颜色、数量、RMB/USD、外贸术语等，如果客户没有详细的产品数量，可按照不同数量给出阶梯报价；"},
-        "examples": [],
-    },
     "完成订单": {
         "start_condition": """需求和价格的商讨已经达成一致。""",
         "participate_agent_names": ["User", "Warehouse", "Salesperson"],
@@ -59,7 +52,7 @@ salesperson = TeachableAgent(
     system_message=f"You are a helpful AI salesperson that remembers useful info from prior chats. You can only sell goods from the Warehouse. If User proposed to buy something but Warehouse did't mation that thing, you can't be the next role, you should be the role behind the Warehouse. ",
     llm_config=llm_config,
     teach_config={
-        "verbosity": 3,  # 0 for basic info, 1 to add memory operations, 2 for analyzer messages, 3 for memo lists.
+        "verbosity": 0,  # 0 for basic info, 1 to add memory operations, 2 for analyzer messages, 3 for memo lists.
         "reset_db": True,  # Set to True to start over with an empty database.
         "path_to_db_dir": "./tmp/notebook/teachable_agent_db",
         # Path to the directory where the database will be stored.
