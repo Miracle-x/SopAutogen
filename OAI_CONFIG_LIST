@@ -1,0 +1,7 @@
+[
+    {
+        "model": "gpt-4-1106-preview",
+        "api_key": "输入你的<api_key>",
+        "base_url": "输入你的<base_url>"
+    }
+]
